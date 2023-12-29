@@ -11,7 +11,9 @@ const getUserParamsHeader = (headersParams) => {
   const longitude = headersParams['x-user-longitude'];
   const language = headersParams['x-user-language'];
   if (!latitude || !longitude || !language) {
-    console.error('ERROR: usersService.getUserParamsHeader:', err.message);
+    console.error(
+      'ERROR: usersService.getUserParamsHeader: headers params (latitude, longitude and language) are mandatory'
+    );
   }
   return { latitude, longitude, language };
 };

@@ -71,6 +71,34 @@ usersRouter.get('/:id', usersController.getUserById);
 /**
  * @swagger
  * /users/{id}:
+ *   get:
+ *     tags:
+ *      - Users
+ *     summary: Obtener un usuario por ID.
+ *     description: Devuelve los datos de un usuario basado en un ID.
+ *     parameters:
+ *       - $ref: '#/components/parameters/latitudeHeader'
+ *       - $ref: '#/components/parameters/longitudeHeader'
+ *       - $ref: '#/components/parameters/languageHeader'
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del usuario a buscar.
+ *     responses:
+ *       200:
+ *         description: Detalles del usuario obtenidos con éxito.
+ *       404:
+ *         description: Usuario no encontrado.
+ *       400:
+ *         description: Error al obtener el usuario.
+ */
+usersRouter.get('/username/:username', usersController.getUserByUsername);
+
+/**
+ * @swagger
+ * /users/{id}:
  *   put:
  *     tags:
  *      - Users

@@ -74,6 +74,24 @@ const getUserById = (userId) => {
 };
 
 /**
+ * Get a user with the username in the supposed third party API.
+ *  @param {string} username User name
+ *  @returns {Promise<Object>} User object
+ */
+const getUserByUsername = (username) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const idxUser = USERS.findIndex((u) => u.username == username);
+      if (idxUser === -1) {
+        return reject('usersSouthernAPIService.updateUser:  User not found');
+      }
+
+      resolve(USERS[idxUser]);
+    }, 1000);
+  });
+};
+
+/**
  * Delete a user with the id in the supposed third party API.
  *  @param {number} userId User id
  *  @returns {Promise<boolean>} Indicates success operation
@@ -96,5 +114,6 @@ module.exports = {
   insertUser,
   updateUser,
   getUserById,
+  getUserByUsername,
   deleteUser,
 };

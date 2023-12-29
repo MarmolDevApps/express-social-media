@@ -11,7 +11,7 @@ const insertUser = async ({ username, email, password, latitude, longitude, lang
 
     const sql =
       'INSERT INTO users (username, email, password, latitude, longitude, language) VALUES (?, ?, ?, ?, ?, ?)';
-    const params = [username, password, email, latitude, longitude, language];
+    const params = [username, email, password, latitude, longitude, language];
 
     const result = await dbClient.run(sql, params);
     if (!result.lastID) {
@@ -71,6 +71,26 @@ const getUserById = async (userId) => {
 };
 
 /**
+ * Get a user with the username in our database.
+ *  @param {string} username User name
+ *  @returns {Promise<Object>} User object
+ */
+const getUserByUsername = async (username) => {
+  try {
+    const dbClient = await db.getClient();
+
+    const sql = `SELECT * FROM users WHERE username = ?`;
+    const params = [username];
+
+    const result = await dbClient.get(sql, params);
+
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};
+
+/**
  * Delete a user with the id in our database.
  *  @param {number} userId User id
  *  @returns {Promise<boolean>} Indicates success operation
@@ -97,5 +117,6 @@ module.exports = {
   insertUser,
   updateUser,
   getUserById,
+  getUserByUsername,
   deleteUser,
 };

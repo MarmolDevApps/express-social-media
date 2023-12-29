@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE INDEX IF NOT EXISTS idx_username ON users(username);
+
 CREATE TABLE IF NOT EXISTS friendships (
     user_id INTEGER NOT NULL,
     friend_id INTEGER NOT NULL,

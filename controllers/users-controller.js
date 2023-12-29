@@ -34,10 +34,10 @@ const createUser = async (req, res) => {
       ? await usersDBService.insertUser(paramsUser)
       : await usersSouthernAPIService.insertUser(paramsUser);
 
-    res.status(201).json({ id: result });
+    return res.status(201).json({ id: result });
   } catch (err) {
     console.error(err?.message ?? err, { correlationId: req.correlationId });
-    res.status(400).json({ error: 'Error creating user' });
+    return res.status(400).json({ error: 'Error creating user' });
   }
 };
 
@@ -69,10 +69,10 @@ const updateUser = async (req, res) => {
       ? await usersDBService.updateUser(nonNullFields, userId)
       : await usersSouthernAPIService.updateUser(nonNullFields, userId);
 
-    res.status(200).json({ success: result });
+    return res.status(200).json({ success: result });
   } catch (err) {
     console.error(err?.message ?? err, { correlationId: req.correlationId });
-    res.status(400).json({ error: 'Error updating user' });
+    return res.status(400).json({ error: 'Error updating user' });
   }
 };
 
@@ -84,7 +84,7 @@ const updateUser = async (req, res) => {
  */
 const getUserById = async (req, res) => {
   try {
-    const { isLocalUser } = usersService.isLocalUser(req.headers);
+    const isLocalUser = await usersService.isLocalUser(req.headers);
     const userId = req.params.id;
 
     if (!userId) {
@@ -101,10 +101,42 @@ const getUserById = async (req, res) => {
 
     const { password, ...userWithoutPassword } = user;
 
-    res.status(200).json(userWithoutPassword);
+    return res.status(200).json(userWithoutPassword);
   } catch (err) {
     console.error(err?.message ?? err, { correlationId: req.correlationId });
-    res.status(400).json({ error: 'Error getting user' });
+    return res.status(400).json({ error: 'Error getting user' });
+  }
+};
+
+/**
+ * Get a User by Username operation.
+ *  @param {Object} req Object Request Express
+ *  @param {Object} res Object Response Express
+ *  @returns {Promise<Object>} Response Express with the operation resulkt
+ */
+const getUserByUsername = async (req, res) => {
+  try {
+    const isLocalUser = await usersService.isLocalUser(req.headers);
+    const username = req.params.username;
+
+    if (!username) {
+      return res.status(400).json({ error: `username not received` });
+    }
+
+    const user = isLocalUser
+      ? await usersDBService.getUserByUsername(username)
+      : await usersSouthernAPIService.getUserByUsername(username);
+
+    if (!user) {
+      return res.status(404).json({ error: `User not found with username: ${username}` });
+    }
+
+    const { password, ...userWithoutPassword } = user;
+
+    return res.status(200).json(userWithoutPassword);
+  } catch (err) {
+    console.error(err?.message ?? err, { correlationId: req.correlationId });
+    return res.status(400).json({ error: 'Error getting user' });
   }
 };
 
@@ -116,9 +148,8 @@ const getUserById = async (req, res) => {
  */
 const deleteUser = async (req, res) => {
   try {
-    const { isLocalUser } = usersService.isLocalUser(req.headers);
+    const isLocalUser = await usersService.isLocalUser(req.headers);
     const userId = req.params.id;
-
     if (!userId) {
       return res.status(400).json({ error: `userId not received` });
     }
@@ -127,10 +158,10 @@ const deleteUser = async (req, res) => {
       ? await usersDBService.deleteUser(userId)
       : await usersSouthernAPIService.deleteUser(userId);
 
-    res.status(200).json({ success: result });
+    return res.status(200).json({ success: result });
   } catch (err) {
     console.error(err?.message ?? err, { correlationId: req.correlationId });
-    res.status(400).json({ error: 'Error deleting user' });
+    return res.status(400).json({ error: 'Error deleting user' });
   }
 };
 
@@ -138,5 +169,6 @@ module.exports = {
   createUser,
   updateUser,
   getUserById,
+  getUserByUsername,
   deleteUser,
 };
